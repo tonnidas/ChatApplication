@@ -46,6 +46,8 @@ public class ChatWsHandler extends TextWebSocketHandler {
         log.info("Ws client disconnected");
         sessions.remove(session);
         clientRecords.remove(session.getId());
+        refreshClientList();
+    }
 
     public void processMessage(String sessionId, Message message) throws IOException {
         if (!clientRecords.containsKey(sessionId)) {
@@ -70,6 +72,20 @@ public class ChatWsHandler extends TextWebSocketHandler {
         }
 
         clientRecords.put(sessionId, record);
+        refreshClientList();
+    }
+
+    private void refreshClientList() throws IOException {
+        Message message = new Message();
+        message.setType(4);
+        message.setClients(new ArrayList<>(clientRecords.values()));
+        TextMessage textMessage = new TextMessage(new Gson().toJson(message, Message.class));
+
+        log.info("Refreshing client list");
+
+        for (WebSocketSession webSocketSession : sessions) {
+            webSocketSession.sendMessage(textMessage);
+        }
     }
 
     private void broadcastMessage(Message message, String senderSessionId) throws IOException {
