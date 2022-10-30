@@ -19,6 +19,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @Slf4j
 public class ChatWsHandler extends TextWebSocketHandler {
 
+    List<WebSocketSession> sessions = new CopyOnWriteArrayList<>();
+    Map<String, ClientRecord> clientRecords = new HashMap<>();
+
     @Override
     public void handleTextMessage(WebSocketSession session, TextMessage message) {
         log.info("Received message from ws client: " + message.getPayload());
@@ -27,10 +30,14 @@ public class ChatWsHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
         log.info("Ws client connected");
+        sessions.add(session);
+        clientRecords.put(session.getId(), new ClientRecord("", true));
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws IOException {
         log.info("Ws client disconnected");
+        sessions.remove(session);
+        clientRecords.remove(session.getId());
     }
 }
