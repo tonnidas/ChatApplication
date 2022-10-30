@@ -57,6 +57,19 @@ public class ChatWsHandler extends TextWebSocketHandler {
             broadcastMessage(message, sessionId);
             return;
         }
+
+        ClientRecord record = clientRecords.get(sessionId);
+        record.setName(message.getSender());
+
+        if (message.getType() == 1) { // set initial name
+            record.setName(message.getSender());
+        } else if (message.getType() == 2) { // set online
+            record.setIsOnline(true);
+        } else if (message.getType() == 3) { // set dnd
+            record.setIsOnline(false);
+        }
+
+        clientRecords.put(sessionId, record);
     }
 
     private void broadcastMessage(Message message, String senderSessionId) throws IOException {
