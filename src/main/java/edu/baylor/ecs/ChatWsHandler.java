@@ -25,6 +25,13 @@ public class ChatWsHandler extends TextWebSocketHandler {
     @Override
     public void handleTextMessage(WebSocketSession session, TextMessage message) {
         log.info("Received message from ws client: " + message.getPayload());
+
+        Message msg = new Gson().fromJson(message.getPayload(), Message.class);
+        try {
+            processMessage(session.getId(), msg);
+        } catch (IOException e) {
+            log.error(e.getMessage());
+        }
     }
 
     @Override
@@ -39,5 +46,34 @@ public class ChatWsHandler extends TextWebSocketHandler {
         log.info("Ws client disconnected");
         sessions.remove(session);
         clientRecords.remove(session.getId());
+
+    public void processMessage(String sessionId, Message message) throws IOException {
+        if (!clientRecords.containsKey(sessionId)) {
+            log.error("Could not find client record with session id: " + sessionId);
+            return;
+        }
+
+        if (message.getType() == 0) { // broadcast message
+            broadcastMessage(message, sessionId);
+            return;
+        }
+    }
+
+    private void broadcastMessage(Message message, String senderSessionId) throws IOException {
+        TextMessage textMessage = new TextMessage(new Gson().toJson(message, Message.class));
+        log.info("Sending message to all ws clients: " + textMessage.getPayload());
+
+        for (WebSocketSession webSocketSession : sessions) {
+            String sessionId = webSocketSession.getId();
+            if (!clientRecords.containsKey(sessionId)) {
+                log.error("Could not find client record with session id: " + sessionId);
+                continue;
+            }
+            ClientRecord record = clientRecords.get(sessionId);
+
+            if (sessionId.equals(senderSessionId) || record.getIsOnline()) {
+                webSocketSession.sendMessage(textMessage);
+            }
+        }
     }
 }
