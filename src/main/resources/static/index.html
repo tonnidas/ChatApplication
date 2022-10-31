@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebSocket Chat Application</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="/app.js"></script>
+</head>
+<body>
+<div id="main-content" class="container">
+
+    <h1>Chat Application</h1>
+
+    <div class="form-group">
+        <div class="form-group">
+            <label for="user">Name</label>
+            <input type="text" class="form-control" id="user" placeholder="Enter your name">
+        </div>
+        <button id="connect" class="btn btn-primary">Start New Chat</button>
+        <button id="disconnect" class="btn btn-primary" disabled="disabled">End Chat</button>
+        <button id="online" class="btn btn-primary" disabled="disabled">Online</button>
+        <button id="dnd" class="btn btn-primary" disabled="disabled">Do not disturb</button>
+    </div>
+
+</div>
+</body>
+</html>
