@@ -38,6 +38,44 @@ function disconnect() {
     console.log("Websocket disconnected");
 }
 
+function setOnline() {
+    let data = JSON.stringify({
+        'type': 2,
+        'sender': $("#user").val()
+    })
+    ws.send(data);
+    $("#online").prop("disabled", true);
+    $("#dnd").prop("disabled", false);
+}
+
+function setDND() {
+    let data = JSON.stringify({
+        'type': 3,
+        'sender': $("#user").val()
+    })
+    ws.send(data);
+    $("#online").prop("disabled", false);
+    $("#dnd").prop("disabled", true);
+}
+
+function sendName() {
+    let data = JSON.stringify({
+        'type': 1,
+        'sender': $("#user").val()
+    })
+    ws.send(data);
+}
+
+function sendMessage() {
+    let data = JSON.stringify({
+        'type': 0,
+        'sender': $("#user").val(),
+        'content': $("#message").val()
+    })
+    ws.send(data);
+    $("#message").val("");
+}
+
 function processMessage(message) {
     if (message.type === 0) {
         $("#chatBody").append("<tr><td>" + message.sender + ": " + message.content + "</td></tr>");
